@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8" />
+    <title>Flash me!</title>
+    <link rel="stylesheet" href="index.css" />
+  </head>
+  <body>
+    <div id="container">
+      <!-- <h3>Flash me!</h3> -->
+      <!-- <p id="info"></p> -->
+      <!-- <hr> -->
+      <div class="block">
+        <label for="firmware">Firmware:</label>
+        <input type="file" name="firmware" id="firmware" accept=".hex">
+      </div>
+      <div class="block">
+        <label>Port:</label>
+        <select name="ports" id="ports"></select>
+      </div>
+      <hr>
+      <div class="block">
+        <button name="refresh" id="refresh">Refresh port list</button>
+        <button name="flash" id="flash">Flash</button>
+        <button name="reset" id="reset">Reset EEPROM</button>
+      </div>
+    </div>
+  </body>
+  <script src="./renderer.js"></script>
+</html>
