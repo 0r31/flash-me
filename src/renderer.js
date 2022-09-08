@@ -25,10 +25,6 @@ async function getSerialPorts() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', async () => {
-  getSerialPorts();
-});
+document.addEventListener('DOMContentLoaded', getSerialPorts)
 
-refresh.addEventListener('click', async () => {
-  getSerialPorts();
-})
+refresh.addEventListener('click', getSerialPorts)

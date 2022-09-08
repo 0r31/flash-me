@@ -1,18 +1,15 @@
 const { app, BrowserWindow, ipcMain } = require('electron')
 const path = require('path')
-const Avrgirl = require('avrgirl-arduino')
+const SerialPort = require('serialport')
 
 const manufacturers = ["FTDI", "Silicon Labs"]
 
-function getSerialPorts() {
-  return new Promise(function(resolve, reject) {
-      Avrgirl.list(function(err, ports) {
-        if(err) return reject(err)
-        ports = ports.filter(port => manufacturers.includes(port.manufacturer))
-        return resolve(ports)
-    })
-  })
+async function getSerialPorts() {
+  let ports = await SerialPort.list()
+  ports = ports.filter(port => manufacturers.includes(port.manufacturer))
+  return ports
 }
+
 
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 // eslint-disable-next-line global-require

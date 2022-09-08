@@ -2,7 +2,7 @@
   "name": "flash-me",
   "productName": "flash-me",
   "version": "1.0.0",
-  "description": "My Electron application description",
+  "description": "Easily flash any atmega2560 board",
   "main": "src/main.js",
   "scripts": {
     "start": "electron-forge start",
@@ -25,7 +25,7 @@
         {
           "name": "@electron-forge/maker-squirrel",
           "config": {
-            "name": "my_app_16.17.0"
+            "name": "flash-me"
           }
         },
         {
