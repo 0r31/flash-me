@@ -80,6 +80,24 @@ async function resetMe() {
   })
 }
 
+function handleKeyPress (event) {
+  switch(event.key.toLowerCase()) {
+    case 'o':
+      openMe()
+      break
+    case 'l':
+      listMe()
+      break
+    case 'f':
+      flashMe()
+      break
+    case 'r':
+      resetMe()
+      break
+  }
+}
+
+window.addEventListener('keyup', handleKeyPress, true)
 document.addEventListener('DOMContentLoaded', listMe)
 fileButton.addEventListener('click', openMe)
 refresh.addEventListener('click', listMe)

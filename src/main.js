@@ -32,10 +32,7 @@ async function reset(event, port) {
   var message
   return new Promise((resolve, reject) => {
     const serialport = new SerialPort(port, { baudRate: 250000 }, (err) => {
-      if (err) {
-        serialport.close()
-        reject(err.message)
-      }
+      if (err) reject(err.message)
     })
 
     serialport.on('data', (data) => {
@@ -68,18 +65,20 @@ if (require('electron-squirrel-startup')) {
 const createWindow = () => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
-    width: 800,
-    height: 600,
+    width: 350, //800
+    height: 250, //600
     webPreferences: {
       preload: path.join(__dirname, 'preload.js'),
     },
+    resizable: false,
+    autoHideMenuBar: true,
   })
 
   // and load the index.html of the app.
   mainWindow.loadFile(path.join(__dirname, 'index.html'))
 
   // Open the DevTools.
-  mainWindow.webContents.openDevTools({mode: 'bottom', activate: true})
+  //mainWindow.webContents.openDevTools({mode: 'bottom', activate: true})
 }
 
 app.whenReady().then(() => {
