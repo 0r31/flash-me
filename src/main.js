@@ -1,6 +1,7 @@
 const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('path')
 const SerialPort = require('serialport')
+const Ready = require('@serialport/parser-ready')
 const Avrgirl = require('avrgirl-arduino')
 
 const manufacturers = ["FTDI", "Silicon Labs"]
@@ -29,22 +30,26 @@ async function flash(event, port, filePath) {
 }
 
 async function reset(event, port) {
-  var message
+  var message = ''
   return new Promise((resolve, reject) => {
     const serialport = new SerialPort(port, { baudRate: 250000 }, (err) => {
       if (err) reject(err.message)
     })
 
-    serialport.on('data', (data) => {
+    const parser = serialport.pipe(new Ready({ delimiter: 'start' }))
+    
+    parser.on('ready', () => {
+      serialport.write('M502\nM500\n', (err) => {
+        if (err) {
+          serialport.close()
+          reject(err.message)
+        }
+      })
+    })
+
+    parser.on('data', (data) => {
       var line = data.toString().trim()
-      if(line === 'wait') {
-        serialport.write('M502\nM500\n', (err) => {
-          if (err) {
-            serialport.close()
-            reject(err.message)
-          }
-        })
-      } else if(line.indexOf('echo:Hardcoded') !== -1) {
+      if(line.indexOf('echo:Hardcoded') !== -1) {
         message = 'Factory settings loaded!\n'
       } else if(line.indexOf('echo:Settings') !== -1) {
         message += 'Factory settings saved!'
