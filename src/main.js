@@ -10,7 +10,9 @@ async function open() {
   const { canceled, filePaths } = await dialog.showOpenDialog()
   if (canceled) return
   const filePath = filePaths[0]
-  return {filePath: filePath, fileName: path.basename(filePath) }
+  let fileName = path.basename(filePath)
+  if(fileName.length > 20) fileName = `${fileName.substring(0, 9)}...${fileName.substring(fileName.length - 9, fileName.length)}`
+  return {filePath, fileName }
 }
 
 async function list() {
@@ -37,7 +39,7 @@ async function reset(event, port) {
     })
 
     const parser = serialport.pipe(new Ready({ delimiter: 'start' }))
-    
+
     parser.on('ready', () => {
       serialport.write('M502\nM500\n', (err) => {
         if (err) {
@@ -55,6 +57,9 @@ async function reset(event, port) {
         message += 'Factory settings saved!'
         serialport.close()
         resolve(message)
+      } else if(line.indexOf('Printer halted') !== -1) {
+        serialport.close()
+        reject(line)
       }
     })
   })

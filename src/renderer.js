@@ -23,6 +23,11 @@ function toggle() {
   reset.disabled = !disabled
 }
 
+function setMessage(messageText) {
+  toggle()
+  message.innerText = messageText
+}
+
 async function openMe() {
   const firmware = await window.flashMeAPI.open()
   filePath = firmware.filePath
@@ -42,7 +47,7 @@ async function listMe() {
 }
 
 async function flashMe() {
-  const port = ports.value
+  port = ports.value
   if(port === 'none') {
     message.innerText = 'No port available!'
     return
@@ -52,31 +57,26 @@ async function flashMe() {
     return
   }
 
-  message.innerText = 'Flashing...'
-  toggle()
+  setMessage('Flashing...')
   flashMeAPI.flash(port, filePath).then((result) => {
-    toggle()
-    message.innerText = result
+    setMessage(result)
   }).catch((error) => {
-    toggle()
-    message.innerText = error
+    setMessage(error)
   })
 }
 
 async function resetMe() {
-  const port = ports.value
+  port = ports.value
   if(port === 'none') {
     message.innerText = 'No port available!'
     return
   }
-  message.innerText = 'Resetting EEPROM...'
-  toggle()
+
+  setMessage('Resetting EEPROM...')
   await flashMeAPI.reset(port).then((result) => {
-    toggle()
-    message.innerText = result
+    setMessage(result)
   }).catch((error) => {
-    toggle()
-    message.innerText = error
+    setMessage(error)
   })
 }
 
