@@ -1,13 +1,61 @@
-const { app, BrowserWindow, ipcMain } = require('electron')
+const { app, BrowserWindow, ipcMain, dialog } = require('electron')
 const path = require('path')
 const SerialPort = require('serialport')
+const Avrgirl = require('avrgirl-arduino')
 
 const manufacturers = ["FTDI", "Silicon Labs"]
 
-async function getSerialPorts() {
+async function open() {
+  const { canceled, filePaths } = await dialog.showOpenDialog()
+  if (canceled) return
+  const filePath = filePaths[0]
+  return {filePath: filePath, fileName: path.basename(filePath) }
+}
+
+async function list() {
   let ports = await SerialPort.list()
   ports = ports.filter(port => manufacturers.includes(port.manufacturer))
   return ports
+}
+
+async function flash(event, port, filePath) {
+  var avrgirl = new Avrgirl({ board: 'mega', port: port, debug: true })
+  return new Promise((resolve, reject) => {
+    avrgirl.flash(filePath, (error) => {
+      if (error) reject(error)
+      resolve('Flash ok!')
+    })
+  })
+}
+
+async function reset(event, port) {
+  var message
+  return new Promise((resolve, reject) => {
+    const serialport = new SerialPort(port, { baudRate: 250000 }, (err) => {
+      if (err) {
+        serialport.close()
+        reject(err.message)
+      }
+    })
+
+    serialport.on('data', (data) => {
+      var line = data.toString().trim()
+      if(line === 'wait') {
+        serialport.write('M502\nM500\n', (err) => {
+          if (err) {
+            serialport.close()
+            reject(err.message)
+          }
+        })
+      } else if(line.indexOf('echo:Hardcoded') !== -1) {
+        message = 'Factory settings loaded!\n'
+      } else if(line.indexOf('echo:Settings') !== -1) {
+        message += 'Factory settings saved!'
+        serialport.close()
+        resolve(message)
+      }
+    })
+  })
 }
 
 
@@ -35,7 +83,10 @@ const createWindow = () => {
 }
 
 app.whenReady().then(() => {
-  ipcMain.handle('serial:getports', getSerialPorts)
+  ipcMain.handle('dialog:open', open)
+  ipcMain.handle('serial:list', list)
+  ipcMain.handle('serial:flash', flash)
+  ipcMain.handle('serial:reset', reset)
   createWindow()
   app.on('activate', function () {
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
