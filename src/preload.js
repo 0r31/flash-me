@@ -4,7 +4,7 @@ const { contextBridge, ipcRenderer } = require('electron')
 
 contextBridge.exposeInMainWorld('flashMeAPI', {
   open: () => ipcRenderer.invoke('dialog:open'),
-  list: () => ipcRenderer.invoke('serial:list'),
+  list: (callback) => ipcRenderer.on('list', callback),
   flash: (port, filePath) => ipcRenderer.invoke('serial:flash', port, filePath),
   reset: (port) => ipcRenderer.invoke('serial:reset', port)
 })

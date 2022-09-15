@@ -1,6 +1,5 @@
 const fileButton = document.getElementById('firmware')
 const fileName = document.getElementById('fileName')
-const refresh = document.getElementById('refresh')
 const ports = document.getElementById('ports')
 const flash = document.getElementById('flash')
 const reset = document.getElementById('reset')
@@ -34,17 +33,17 @@ async function openMe() {
   fileName.innerText = firmware.fileName
 }
 
-async function listMe() {
-  const serialPorts = await flashMeAPI.list()
+window.flashMeAPI.list((event, value) => {
+  console.log(event)
   ports.replaceChildren([])
-  if(serialPorts.length > 0) {
-    serialPorts.forEach(port => {
+  if(value.length > 0) {
+    value.forEach(port => {
       addOption(port.path, port.path)
     })
   } else {
     addOption('none', 'No ports available')
   }
-}
+})
 
 async function flashMe() {
   port = ports.value
@@ -85,9 +84,6 @@ function handleKeyPress (event) {
     case 'o':
       openMe()
       break
-    case 'l':
-      listMe()
-      break
     case 'f':
       flashMe()
       break
@@ -98,8 +94,6 @@ function handleKeyPress (event) {
 }
 
 window.addEventListener('keyup', handleKeyPress, true)
-document.addEventListener('DOMContentLoaded', listMe)
 fileButton.addEventListener('click', openMe)
-refresh.addEventListener('click', listMe)
 flash.addEventListener('click', flashMe)
 reset.addEventListener('click', resetMe)
