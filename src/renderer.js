@@ -33,11 +33,10 @@ async function openMe() {
   fileName.innerText = firmware.fileName
 }
 
-window.flashMeAPI.list((event, value) => {
-  console.log(event)
+flashMeAPI.list((event, serialports) => {
   ports.replaceChildren([])
-  if(value.length > 0) {
-    value.forEach(port => {
+  if(serialports.length > 0) {
+    serialports.forEach(port => {
       addOption(port.path, port.path)
     })
   } else {

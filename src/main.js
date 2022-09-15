@@ -83,7 +83,9 @@ const createWindow = () => {
   // Open the DevTools.
   //mainWindow.webContents.openDevTools({mode: 'bottom', activate: true})
   setInterval(async () => {
-    var ports = await SerialPort.list()
+    var ports = await SerialPort.list().catch((err) => {
+      console.log(err)
+    })
     ports = ports.filter(port => manufacturers.includes(port.manufacturer))
     mainWindow.webContents.send('list', ports)
   }, 1000)
@@ -91,7 +93,6 @@ const createWindow = () => {
 
 app.whenReady().then(() => {
   ipcMain.handle('dialog:open', open)
-  //ipcMain.handle('serial:list', list)
   ipcMain.handle('serial:flash', flash)
   ipcMain.handle('serial:reset', reset)
   createWindow()
