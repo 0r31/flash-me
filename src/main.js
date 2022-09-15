@@ -85,7 +85,6 @@ const createWindow = () => {
   setInterval(async () => {
     var ports = await SerialPort.list()
     ports = ports.filter(port => manufacturers.includes(port.manufacturer))
-    //var ports = [{'path': 'wololo'}]
     mainWindow.webContents.send('list', ports)
   }, 1000)
 }
