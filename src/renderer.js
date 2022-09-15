@@ -28,7 +28,7 @@ function setMessage(messageText) {
 }
 
 async function openMe() {
-  const firmware = await window.flashMeAPI.open()
+  const firmware = await flashMeAPI.open()
   filePath = firmware.filePath
   fileName.innerText = firmware.fileName
 }
