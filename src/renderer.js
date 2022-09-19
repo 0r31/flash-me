@@ -8,8 +8,9 @@ const message = document.getElementById('message')
 var port = 'none'
 var filePath = ''
 
-function addOption(value, label) {
-  let text = document.createTextNode(label)
+function addOption(value, label = '') {
+  let optionLabel = (label) ? label : value;
+  let text = document.createTextNode(optionLabel)
   let option = document.createElement('option')
   option.setAttribute('value', value)
   option.appendChild(text)
@@ -34,11 +35,21 @@ async function openMe() {
 }
 
 flashMeAPI.list((event, serialports) => {
-  ports.replaceChildren([])
+  let selectedPort = ports.value
+  let portPaths = []
+  ports.replaceChildren(portPaths)
   if(serialports.length > 0) {
+
     serialports.forEach(port => {
-      addOption(port.path, port.path)
+      let portPath = port.path
+      addOption(portPath)
+      portPaths.push(portPath)
     })
+    if(selectedPort && portPaths.includes(selectedPort)) {
+      ports.value = selectedPort
+    } else {
+      ports.value = serialports[0].path
+    }
   } else {
     addOption('none', 'No ports available')
   }
