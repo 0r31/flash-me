@@ -15,12 +15,6 @@ async function open() {
   return {filePath, fileName }
 }
 
-async function list() {
-  let ports = await SerialPort.list()
-  ports = ports.filter(port => manufacturers.includes(port.manufacturer))
-  return ports
-}
-
 async function flash(event, port, filePath) {
   var avrgirl = new Avrgirl({ board: 'mega', port: port, debug: true })
   return new Promise((resolve, reject) => {
@@ -65,7 +59,6 @@ async function reset(event, port) {
   })
 }
 
-
 // Handle creating/removing shortcuts on Windows when installing/uninstalling.
 // eslint-disable-next-line global-require
 if (require('electron-squirrel-startup')) {
@@ -89,11 +82,17 @@ const createWindow = () => {
 
   // Open the DevTools.
   //mainWindow.webContents.openDevTools({mode: 'bottom', activate: true})
+  setInterval(async () => {
+    var ports = await SerialPort.list().catch((err) => {
+      console.log(err)
+    })
+    ports = ports.filter(port => manufacturers.includes(port.manufacturer))
+    mainWindow.webContents.send('list', ports)
+  }, 1000)
 }
 
 app.whenReady().then(() => {
   ipcMain.handle('dialog:open', open)
-  ipcMain.handle('serial:list', list)
   ipcMain.handle('serial:flash', flash)
   ipcMain.handle('serial:reset', reset)
   createWindow()

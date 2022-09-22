@@ -1,6 +1,5 @@
 const fileButton = document.getElementById('firmware')
 const fileName = document.getElementById('fileName')
-const refresh = document.getElementById('refresh')
 const ports = document.getElementById('ports')
 const flash = document.getElementById('flash')
 const reset = document.getElementById('reset')
@@ -9,8 +8,9 @@ const message = document.getElementById('message')
 var port = 'none'
 var filePath = ''
 
-function addOption(value, label) {
-  let text = document.createTextNode(label)
+function addOption(value, label = '') {
+  let optionLabel = (label) ? label : value;
+  let text = document.createTextNode(optionLabel)
   let option = document.createElement('option')
   option.setAttribute('value', value)
   option.appendChild(text)
@@ -29,22 +29,31 @@ function setMessage(messageText) {
 }
 
 async function openMe() {
-  const firmware = await window.flashMeAPI.open()
+  const firmware = await flashMeAPI.open()
   filePath = firmware.filePath
   fileName.innerText = firmware.fileName
 }
 
-async function listMe() {
-  const serialPorts = await flashMeAPI.list()
-  ports.replaceChildren([])
-  if(serialPorts.length > 0) {
-    serialPorts.forEach(port => {
-      addOption(port.path, port.path)
+flashMeAPI.list((event, serialports) => {
+  let selectedPort = ports.value
+  let portPaths = []
+  ports.replaceChildren(portPaths)
+  if(serialports.length > 0) {
+
+    serialports.forEach(port => {
+      let portPath = port.path
+      addOption(portPath)
+      portPaths.push(portPath)
     })
+    if(selectedPort && portPaths.includes(selectedPort)) {
+      ports.value = selectedPort
+    } else {
+      ports.value = serialports[0].path
+    }
   } else {
     addOption('none', 'No ports available')
   }
-}
+})
 
 async function flashMe() {
   port = ports.value
@@ -85,9 +94,6 @@ function handleKeyPress (event) {
     case 'o':
       openMe()
       break
-    case 'l':
-      listMe()
-      break
     case 'f':
       flashMe()
       break
@@ -98,8 +104,6 @@ function handleKeyPress (event) {
 }
 
 window.addEventListener('keyup', handleKeyPress, true)
-document.addEventListener('DOMContentLoaded', listMe)
 fileButton.addEventListener('click', openMe)
-refresh.addEventListener('click', listMe)
 flash.addEventListener('click', flashMe)
 reset.addEventListener('click', resetMe)
