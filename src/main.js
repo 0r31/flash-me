@@ -4,7 +4,7 @@ const SerialPort = require('serialport')
 const Ready = require('@serialport/parser-ready')
 const Avrgirl = require('avrgirl-arduino')
 
-const manufacturers = ["FTDI", "Silicon Labs"]
+const manufacturers = ["FTDI", "Silicon Labs", "Silicon Laboratories"]
 
 async function open() {
   const { canceled, filePaths } = await dialog.showOpenDialog()
