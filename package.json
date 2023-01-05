@@ -1,7 +1,7 @@
 {
   "name": "flash-me",
   "productName": "flash-me",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Easily flash any atmega2560 board",
   "main": "src/main.js",
   "scripts": {
